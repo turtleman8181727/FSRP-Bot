@@ -2,7 +2,7 @@ import { logger } from '../utils/logger.js';
 
 export const botConfig = {
   // =========================
-  // BOT PRESENCE (what users see under the bot name)
+  // BOT PRESENCE (what users see under the bot name) — used by the "status" command
   // =========================
   // `status` options:
   // - "online"    = green dot
@@ -50,40 +50,9 @@ export const botConfig = {
     // When true (or MAINTENANCE_MODE=true), only bot owners can run commands.
     maintenanceMode: process.env.MAINTENANCE_MODE === "true",
 
-    // Command prefix for text-based commands (e.g., "!" for "!ping").
+    // Command prefix for text-based commands (e.g., "!" for "!ssu").
     // Supports both slash commands and prefix commands.
     prefix: process.env.PREFIX || "!",
-  },
-
-  // =========================
-  // APPLICATIONS SYSTEM
-  // =========================
-  applications: {
-    // Default questions shown when someone fills out an application.
-    defaultQuestions: [
-      { question: "What is your name?", required: true },
-      { question: "How old are you?", required: true },
-      { question: "Why do you want to join?", required: true },
-    ],
-
-    // Embed colors by application status.
-    statusColors: {
-      pending: "#FFA500",
-      approved: "#00FF00",
-      denied: "#FF0000",
-    },
-
-    // How long users must wait before submitting another application (hours).
-    applicationCooldown: 24,
-
-    // Auto-delete denied applications after this many days.
-    deleteDeniedAfter: 7,
-
-    // Auto-delete approved applications after this many days.
-    deleteApprovedAfter: 30,
-
-    // Role IDs allowed to manage applications.
-    managerRoles: [], // Will be populated from environment or database
   },
 
   // =========================
@@ -126,8 +95,6 @@ export const botConfig = {
         closed: "#ED4245",
         pending: "#99AAB5",
       },
-      economy: "#F1C40F",
-      birthday: "#E91E63",
       moderation: "#9B59B6",
 
       // Ticket priority color mapping.
@@ -153,60 +120,6 @@ export const botConfig = {
       icon: null,
       url: null,
     },
-  },
-
-  // =========================
-  // ECONOMY SETTINGS
-  // =========================
-  economy: {
-    currency: {
-      // Currency display name.
-      name: "coins",
-      // Plural display name.
-      namePlural: "coins",
-      // Currency symbol shown in balances.
-      symbol: "$",
-    },
-
-    // Starting balance for new users.
-    startingBalance: 0,
-
-    // Maximum bank amount before upgrades (if upgrades are used).
-    baseBankCapacity: 100000,
-
-    // Daily reward amount.
-    dailyAmount: 100,
-
-    // Work command random payout range.
-    workMin: 10,
-    workMax: 100,
-
-    // Beg command random payout range.
-    begMin: 5,
-    begMax: 50,
-
-    // Command cooldowns (milliseconds).
-    cooldowns: {
-      daily: 24 * 60 * 60 * 1000,
-      work: 60 * 60 * 1000,
-      crime: 2 * 60 * 60 * 1000,
-      rob: 4 * 60 * 60 * 1000,
-    },
-
-    // Chance to succeed when robbing (0.4 = 40%).
-    robSuccessRate: 0.4,
-
-    // Jail time after failed rob (milliseconds).
-    // 3600000 = 1 hour.
-    robFailJailTime: 3600000,
-  },
-
-  // =========================
-  // SHOP SETTINGS
-  // =========================
-  // Add shop defaults here when needed.
-  shop: {
-
   },
 
   // =========================
@@ -284,20 +197,6 @@ export const botConfig = {
   },
 
   // =========================
-  // BIRTHDAY SETTINGS
-  // =========================
-  birthday: {
-    // Role ID given to users on their birthday.
-    defaultRole: null,
-
-    // Channel ID where birthday announcements are posted.
-    announcementChannel: null,
-
-    // Timezone used to calculate birthday dates.
-    timezone: "UTC",
-  },
-
-  // =========================
   // VERIFICATION SETTINGS
   // =========================
   verification: {
@@ -366,25 +265,19 @@ export const botConfig = {
   },
 
   // =========================
-  // WELCOME / GOODBYE MESSAGES
+  // WELCOME MESSAGES
   // =========================
   welcome: {
     // Welcome template posted when a user joins.
     // Placeholders: {user}, {server}, {memberCount}
     defaultWelcomeMessage:
       "Welcome {user} to {server}! We now have {memberCount} members!",
-    // Goodbye template posted when a user leaves.
-    // Placeholders: {user}, {memberCount}
-    defaultGoodbyeMessage:
-      "{user} has left the server. We now have {memberCount} members.",
     // Channel ID for welcome messages.
     defaultWelcomeChannel: null,
-    // Channel ID for goodbye messages.
-    defaultGoodbyeChannel: null,
   },
 
   // =========================
-  // COUNTER CHANNELS
+  // SERVER STATS (COUNTER CHANNELS)
   // =========================
   counters: {
     defaults: {
@@ -431,6 +324,92 @@ export const botConfig = {
   },
 
   // =========================
+  // SESSION COMMANDS (!ssu, !svote, !ssd, !sboost)
+  // =========================
+  sessions: {
+    // Channel ID where session start-up/shutdown/vote/boost messages are posted.
+    channel: null,
+
+    // Role IDs allowed to run session commands.
+    allowedRoles: [],
+
+    // Message posted on !ssu (session start-up).
+    ssuMessage: "🟢 Session is now starting! Join up now!",
+
+    // Message posted on !ssd (session shutdown).
+    ssdMessage: "🔴 Session has ended. Thanks for joining!",
+
+    // Message posted on !sboost.
+    sboostMessage: "🚀 The session has been boosted! Come join the fun!",
+
+    // Number of votes required via !svote before a session start is triggered.
+    voteThreshold: 5,
+
+    // How long an active !svote lasts before expiring (milliseconds).
+    // 600000 = 10 minutes.
+    voteDuration: 600000,
+
+    // Minimum time between session command uses (milliseconds).
+    // 300000 = 5 minutes.
+    cooldown: 300000,
+  },
+
+  // =========================
+  // STAFF INFRACTIONS
+  // =========================
+  infractions: {
+    // Channel ID where infraction logs are posted.
+    logChannel: null,
+
+    // Role IDs allowed to issue/manage infractions.
+    managerRoles: [],
+
+    // Infraction types and their embed colors.
+    types: {
+      verbal: { label: "Verbal Warning", color: "#F1C40F" },
+      written: { label: "Written Warning", color: "#E67E22" },
+      strike: { label: "Strike", color: "#E74C3C" },
+      termination: { label: "Termination", color: "#992D22" },
+    },
+
+    // Default message sent to the affected staff member.
+    defaultMessage: "You have received an infraction: {reason}",
+  },
+
+  // =========================
+  // STAFF PROMOTIONS
+  // =========================
+  promotions: {
+    // Channel ID where promotion announcements are posted.
+    logChannel: null,
+
+    // Role IDs allowed to issue promotions.
+    managerRoles: [],
+
+    // Default promotion announcement template.
+    // Placeholders: {user}, {role}
+    defaultMessage: "🎉 Congratulations {user}, you have been promoted to {role}!",
+  },
+
+  // =========================
+  // STAFF FEEDBACK
+  // =========================
+  staffFeedback: {
+    // Channel ID where staff feedback submissions are posted.
+    channel: null,
+
+    // Role IDs allowed to view/manage staff feedback submissions.
+    managerRoles: [],
+
+    // Whether users may submit feedback anonymously.
+    anonymousAllowed: true,
+
+    // Minimum time between feedback submissions per user (milliseconds).
+    // 86400000 = 24 hours.
+    cooldown: 86400000,
+  },
+
+  // =========================
   // GENERIC BOT MESSAGES
   // =========================
   messages: {
@@ -446,34 +425,48 @@ export const botConfig = {
   // =========================
   // FEATURE TOGGLES
   // =========================
-  // Set any feature to `false` to disable it globally.
+  // Only the categories requested are enabled. Everything else defaults to
+  // false so those command categories are disabled bot-wide via
+  // isFeatureEnabled() / isCommandCategoryEnabled().
   features: {
-    // Core systems.
-    economy: true,
-    leveling: true,
-    moderation: true,
-    logging: true,
-    welcome: true,
-
-    // Community engagement systems.
-    tickets: true,
-    giveaways: true,
-    birthday: true,
-    counter: true,
-
-    // Security and self-service systems.
+    // 1. Verification
     verification: true,
-    reactionRoles: true,
-    joinToCreate: true,
-
-    // Utility/quality-of-life modules.
-    voice: true,
-    search: true,
-    tools: true,
-    utility: true,
-    community: true,
-    fun: true,
+    // 2. Warn/kick/ban commands
+    moderation: true,
+    // 3. Staff feedback commands
+    staffFeedback: true,
+    // 4. Giveaway commands
+    giveaways: true,
+    // 5. Tickets
+    tickets: true,
+    // 6. Logs
+    logging: true,
+    // 7. Session commands (!ssu, !svote, !ssd, !sboost)
+    sessions: true,
+    // 8. Infraction and promotion commands
+    infractions: true,
+    promotions: true,
+    // 9. Welcome message
+    welcome: true,
+    // 10. Server stats
+    counter: true,
+    // 11. Music
     music: true,
+    // 12. Status — controlled via the `presence` block above, no toggle needed.
+
+    // Everything else: disabled.
+    economy: false,
+    leveling: false,
+    birthday: false,
+    reactionRoles: false,
+    joinToCreate: false,
+    voice: false,
+    search: false,
+    tools: false,
+    utility: false,
+    community: false,
+    fun: false,
+    applications: false,
   },
 };
 
@@ -529,25 +522,34 @@ if (configErrors.length > 0) {
 
 export const BotConfig = botConfig;
 
+// Maps command-file categories to the feature flag that gates them.
+// Any category not listed here (or mapped to "core") is always enabled.
 const COMMAND_CATEGORY_FEATURE_MAP = {
-  birthday: "birthday",
-  community: "community",
-  economy: "economy",
-  fun: "fun",
-  giveaway: "giveaways",
-  jointocreate: "joinToCreate",
-  leveling: "leveling",
-  logging: "logging",
   moderation: "moderation",
-  music: "music",
-  reaction_roles: "reactionRoles",
-  search: "search",
-  serverstats: "counter",
+  logging: "logging",
+  welcome: "welcome",
   ticket: "tickets",
+  giveaway: "giveaways",
+  verification: "verification",
+  serverstats: "counter",
+  music: "music",
+  session: "sessions",
+  infraction: "infractions",
+  promotion: "promotions",
+  staff_feedback: "staffFeedback",
+
+  // Disabled categories (kept mapped so they resolve to false via the
+  // features block above, rather than being treated as always-enabled "core").
+  economy: "economy",
+  leveling: "leveling",
+  birthday: "birthday",
+  reaction_roles: "reactionRoles",
+  jointocreate: "joinToCreate",
+  search: "search",
   tools: "tools",
   utility: "utility",
-  verification: "verification",
-  welcome: "welcome",
+  community: "community",
+  fun: "fun",
 };
 
 function normalizeCategoryKey(category) {
@@ -591,7 +593,7 @@ export function isFeatureEnabled(featureKey) {
     return true;
   }
 
-  return botConfig.features?.[featureKey] !== false;
+  return botConfig.features?.[featureKey] === true;
 }
 
 export function isCommandCategoryEnabled(category) {
@@ -609,23 +611,11 @@ export function isCommandCategoryEnabled(category) {
   return isFeatureEnabled(featureKey);
 }
 
-export function getApplicationStatusColor(status) {
-  const colors = botConfig.applications?.statusColors || {};
-  const hex = colors[status];
-  return hex ? getColor(hex) : getColor(status === "approved" ? "success" : status === "denied" ? "error" : "warning");
-}
-
-export function getDefaultApplicationQuestions() {
-  return (botConfig.applications?.defaultQuestions || []).map((entry) =>
-    typeof entry === "string" ? entry : entry.question,
-  ).filter(Boolean);
-}
-
 export function getColor(path, fallback = "#99AAB5") {
-  
+
   if (typeof path === "number") return path;
   if (typeof path === "string" && path.startsWith("#")) {
-    
+
     return parseInt(path.replace("#", ""), 16);
   }
   const result = path
@@ -634,7 +624,7 @@ export function getColor(path, fallback = "#99AAB5") {
       (obj, key) => (obj && obj[key] !== undefined ? obj[key] : fallback),
       botConfig.embeds.colors,
     );
-  
+
   if (typeof result === "string" && result.startsWith("#")) {
     return parseInt(result.replace("#", ""), 16);
   }
